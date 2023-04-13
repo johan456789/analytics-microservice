@@ -1,3 +1,5 @@
+datetime
 fastapi
 uvicorn[standard]
 SQLAlchemy
+MySQLdb
