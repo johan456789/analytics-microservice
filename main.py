@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
-from sqlalchemy import create_engine, Column, Integer, String, Date
+from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
@@ -21,21 +21,21 @@ class Event(Base):
     __tablename__ = 'event'
     eventID = Column(Integer, primary_key=True)
     eventName = Column(String(45))
-    occurTime = Column(String(45))
+    occurTime = Column(DateTime)
     sessionID = Column(String(40))
 
 class SessionTable(Base):
     __tablename__ = 'session'
     sessionID = Column(String(40), primary_key=True)
     userID = Column(String(40))
-    startTime = Column(String(45))
-    endTime = Column(String(45))
+    startTime = Column(DateTime)
+    endTime = Column(DateTime)
 
 class Screen(Base):
     __tablename__ = 'screen'
     screenID = Column(Integer, primary_key=True)
-    endTime = Column(String(45))
-    startTime = Column(String(45))
+    endTime = Column(DateTime)
+    startTime = Column(DateTime)
     screenName = Column(String(50))
     sessionID = Column(String(40))
 
@@ -62,24 +62,3 @@ session = Session()
 # new_Event = Event(eventID=7, eventName='test', occurTime=datetime.now(), sessionID='f3f9f478-e9d1-495b-8bfb-7fd11b70999f')
 # session.add(new_Event)
 # session.commit()
-
-#write get api to select all user from sessiontable who have starttime in Month i choose
-@app.get("/getMonthActiveUser/{month}")
-def get_monthuser(month: str):
-    try:
-        #get all sessionID from sessiontable where starttime is in month i choose
-        userID = session.query(SessionTable.userID).filter(SessionTable.startTime.like(f'%{month}%')).all()
-        return JSONResponse(content=userID) 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail='Failed to get user.')
-    
-#write get api to select all user from sessiontable who have starttime in day i choose
-@app.get("/getDayActiveUser/{day}")
-def get_dayuser(day: str):
-    try:
-        #get all sessionID from sessiontable where starttime is in day i choose
-        userID = session.query(SessionTable.userID).filter(SessionTable.startTime.like(f'%{day}%')).all()
-        #return userID in json format
-        return JSONResponse(content=userID) 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail='Failed to get user.')
