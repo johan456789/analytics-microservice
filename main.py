@@ -63,7 +63,6 @@ session = Session()
 # session.add(new_Event)
 # session.commit()
 
-#write get api to select all user from sessiontable who have starttime in Month i choose
 @app.get("/getMonthActiveUser/{month}")
 def get_monthuser(month: str):
     try:
@@ -73,7 +72,6 @@ def get_monthuser(month: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail='Failed to get user.')
     
-#write get api to select all user from sessiontable who have starttime in day i choose
 @app.get("/getDayActiveUser/{day}")
 def get_dayuser(day: str):
     try:
