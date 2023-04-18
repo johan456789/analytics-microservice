@@ -63,23 +63,32 @@ session = Session()
 # session.add(new_Event)
 # session.commit()
 
-#write get api to select all user from sessiontable who have starttime in Month i choose
-@app.get("/getMonthActiveUser/{month}")
-def get_monthuser(month: str):
+@app.get("/daily_active_users/{date}")
+def get_daily_active_users(date: datetime):
+    #get users who have sessions with starttime on the given date
     try:
-        #get all sessionID from sessiontable where starttime is in month i choose
-        userID = session.query(SessionTable.userID).filter(SessionTable.startTime.like(f'%{month}%')).all()
-        return JSONResponse(content=userID) 
+        result = session.query(SessionTable.userID).filter(SessionTable.startTime == date).distinct().all()
+        #return in json format
+        return JSONResponse(content=result)
     except Exception as e:
-        raise HTTPException(status_code=500, detail='Failed to get user.')
-    
-#write get api to select all user from sessiontable who have starttime in day i choose
-@app.get("/getDayActiveUser/{day}")
-def get_dayuser(day: str):
+        raise HTTPException(status_code=500, detail='Failed to retrieve daily active users.')
+
+@app.get("/weekly_new_users/{date}")
+def get_weekly_new_users(date: datetime):
+    #get user who have sessions with starttime within the last 14 days
     try:
-        #get all sessionID from sessiontable where starttime is in day i choose
-        userID = session.query(SessionTable.userID).filter(SessionTable.startTime.like(f'%{day}%')).all()
-        #return userID in json format
-        return JSONResponse(content=userID) 
+        result = session.query(SessionTable.userID).filter(SessionTable.startTime >= date - datetime.timedelta(days=14)).distinct().all()
+        #return in json format
+        return JSONResponse(content=result)
     except Exception as e:
-        raise HTTPException(status_code=500, detail='Failed to get user.')
+        raise HTTPException(status_code=500, detail='Failed to retrieve weekly new users.')
+
+@app.get("/monthly_active_users/{date}")
+def get_monthly_active_users(date: datetime):
+    #get users who have sessions with starttime within the last 30 days
+    try:
+        result = session.query(SessionTable.userID).filter(SessionTable.startTime >= date - datetime.timedelta(days=60)).distinct().all()
+        #return in json format
+        return JSONResponse(content=result)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail='Failed to retrieve monthly active users.')
