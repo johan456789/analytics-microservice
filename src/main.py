@@ -1,10 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 from datetime import datetime
-import MySQLdb
 
 app = FastAPI()
 
@@ -15,7 +13,6 @@ class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     userID = Column(String(40))
-
 
 class Event(Base):
     __tablename__ = 'event'
@@ -39,10 +36,11 @@ class Screen(Base):
     screenName = Column(String(50))
     sessionID = Column(String(40))
 
+
 # Function to establish a connection to the MySQL database
 def create_db_connection():
     try:
-        engine = create_engine('mysql://root:cMgpBzyj3m2KX9OD35s2@containers-us-west-145.railway.app:5515/dev')
+        engine = create_engine('mysql+pymysql://root:cMgpBzyj3m2KX9OD35s2@containers-us-west-145.railway.app:5515/dev')
         return engine
     except Exception as e:
         raise HTTPException(status_code=500, detail='Failed to connect to MySQL database.')
@@ -62,6 +60,10 @@ session = Session()
 # new_Event = Event(eventID=7, eventName='test', occurTime=datetime.now(), sessionID='f3f9f478-e9d1-495b-8bfb-7fd11b70999f')
 # session.add(new_Event)
 # session.commit()
+
+@app.get('/')
+async def root():
+    return {'message': 'The analytics service is running.'}
 
 #write get api to select all user from sessiontable who have starttime in Month i choose
 @app.get("/getMonthActiveUser/{month}")
