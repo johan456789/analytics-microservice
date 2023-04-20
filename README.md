@@ -11,7 +11,30 @@ pip install -r requirements.txt
 ### Run the app
 
 ```shell
-uvicorn main:app --reload 
+uvicorn src.main:app --reload
 ```
 
-By default, it runs on http://127.0.0.1:8000
+By default, it runs on http://127.0.0.1:8000 and you will see the response:
+
+```json
+{
+  "message": "The analytics service is running."
+}
+```
+
+### Run tests
+
+#### All tests
+
+```shell
+pytest
+```
+
+#### A specific test
+
+```shell
+pytest -k <test_file_or_function>
+```
+
+For example, `pytest -k test_main`
+
