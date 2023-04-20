@@ -2,7 +2,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.orm import sessionmaker, declarative_base
-from datetime import datetime
+from datetime import datetime, timedelta
+from typing import List
 
 app = FastAPI()
 
@@ -67,31 +68,28 @@ async def root():
 
 #write get api to select all user from sessiontable who have starttime in Month i choose
 @app.get("/daily_active_users/{date}")
-def get_daily_active_users(date: datetime):
+def get_daily_active_users(date: datetime) -> List[str]:
     #get users who have sessions with starttime on the given date
     try:
         result = session.query(SessionTable.userID).filter(SessionTable.startTime == date).distinct().all()
-        #return in json format
-        return JSONResponse(content=result)
+        return [row.userID for row in result]
     except Exception as e:
         raise HTTPException(status_code=500, detail='Failed to retrieve daily active users.')
 
 @app.get("/weekly_new_users/{date}")
-def get_weekly_new_users(date: datetime):
+def get_weekly_new_users(date: datetime) -> List[str]:
     #get user who have sessions with starttime within the last 14 days
     try:
-        result = session.query(SessionTable.userID).filter(SessionTable.startTime >= date - datetime.timedelta(days=14)).distinct().all()
-        #return in json format
-        return JSONResponse(content=result)
+        result = session.query(SessionTable.userID).filter(SessionTable.startTime >= date - timedelta(days=14)).distinct().all()
+        return [row.userID for row in result]
     except Exception as e:
         raise HTTPException(status_code=500, detail='Failed to retrieve weekly new users.')
 
 @app.get("/monthly_active_users/{date}")
-def get_monthly_active_users(date: datetime):
+def get_monthly_active_users(date: datetime) -> List[str]:
     #get users who have sessions with starttime within the last 30 days
     try:
-        result = session.query(SessionTable.userID).filter(SessionTable.startTime >= date - datetime.timedelta(days=60)).distinct().all()
-        #return in json format
-        return JSONResponse(content=result)
+        result = session.query(SessionTable.userID).filter(SessionTable.startTime >= date - timedelta(days=60)).distinct().all()
+        return [row.userID for row in result]
     except Exception as e:
         raise HTTPException(status_code=500, detail='Failed to retrieve monthly active users.')
