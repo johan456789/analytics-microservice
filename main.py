@@ -3,10 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime
-import MySQLdb
-
-app = FastAPI()
+from datetime import datetime, timedelta
 
 # Create SQLAlchemy models
 Base = declarative_base()
@@ -53,42 +50,24 @@ Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
-# Insert a new user into the database
-# new_user = User(userID='1234567890abcdef')
-# session.add(new_user)
-# session.commit()
 
-# Insert a new event into the database
-# new_Event = Event(eventID=7, eventName='test', occurTime=datetime.now(), sessionID='f3f9f478-e9d1-495b-8bfb-7fd11b70999f')
-# session.add(new_Event)
-# session.commit()
+# Insert test data into the database
+# def insert_test_data():
+#     # Add a test user
+#     test_user = User(userID='U8765432')
+#     session.add(test_user)
+#     session.commit()
 
-@app.get("/daily_active_users/{date}")
-def get_daily_active_users(date: datetime):
-    #get users who have sessions with starttime on the given date
-    try:
-        result = session.query(SessionTable.userID).filter(SessionTable.startTime == date).distinct().all()
-        #return in json format
-        return JSONResponse(content=result)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail='Failed to retrieve daily active users.')
+#     # Add a test session for the user
+#     test_session = SessionTable(sessionID='S2345678', userID='U8765432', startTime=datetime.now(), endTime=datetime.now())
+#     session.add(test_session)
+#     session.commit()
 
-@app.get("/weekly_new_users/{date}")
-def get_weekly_new_users(date: datetime):
-    #get user who have sessions with starttime within the last 14 days
-    try:
-        result = session.query(SessionTable.userID).filter(SessionTable.startTime >= date - datetime.timedelta(days=14)).distinct().all()
-        #return in json format
-        return JSONResponse(content=result)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail='Failed to retrieve weekly new users.')
+#     # Add a test screen for the session
+#     test_screen = Screen(screenName='SCR00221', startTime=datetime.now(), endTime=datetime.now(), sessionID='S2345678')
+#     session.add(test_screen)
+#     session.commit()
 
-@app.get("/monthly_active_users/{date}")
-def get_monthly_active_users(date: datetime):
-    #get users who have sessions with starttime within the last 30 days
-    try:
-        result = session.query(SessionTable.userID).filter(SessionTable.startTime >= date - datetime.timedelta(days=60)).distinct().all()
-        #return in json format
-        return JSONResponse(content=result)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail='Failed to retrieve monthly active users.')
+#     print("Test data inserted successfully.")
+
+# insert_test_data()
