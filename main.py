@@ -50,24 +50,3 @@ Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
-
-# Insert test data into the database
-# def insert_test_data():
-#     # Add a test user
-#     test_user = User(userID='U8765432')
-#     session.add(test_user)
-#     session.commit()
-
-#     # Add a test session for the user
-#     test_session = SessionTable(sessionID='S2345678', userID='U8765432', startTime=datetime.now(), endTime=datetime.now())
-#     session.add(test_session)
-#     session.commit()
-
-#     # Add a test screen for the session
-#     test_screen = Screen(screenName='SCR00221', startTime=datetime.now(), endTime=datetime.now(), sessionID='S2345678')
-#     session.add(test_screen)
-#     session.commit()
-
-#     print("Test data inserted successfully.")
-
-# insert_test_data()

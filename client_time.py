@@ -5,27 +5,6 @@ from datetime import datetime, timedelta
 from typing import List
 from main import *
 
-# Insert test data into the database
-# def insert_test_data():
-#     # Add a test user
-#     test_user = User(userID='U8765433')
-#     session.add(test_user)
-#     session.commit()
-
-#     # Add a test session for the user
-#     test_session = SessionTable(sessionID='S2345677', userID='U8765433', startTime=datetime.now(), endTime=datetime.now())
-#     session.add(test_session)
-#     session.commit()
-
-#     # Add a test screen for the session
-#     test_screen = Screen(screenName='SCR00220', startTime=datetime.now(), endTime=datetime.now(), sessionID='S2345677')
-#     session.add(test_screen)
-#     session.commit()
-
-#     print("Test data inserted successfully.")
-
-# insert_test_data()
-
 app = FastAPI()
 
 # Fetch total screen time for a given user
