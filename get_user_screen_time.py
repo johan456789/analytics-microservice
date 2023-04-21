@@ -9,7 +9,7 @@ app = FastAPI()
 
 # Fetch total screen time for a given user
 @app.get("/screenTime/{user_id}", response_model=None)
-def get_screen_time(user_id: str) -> List[Screen]:
+def get_user_screen_time(user_id: str) -> List[Screen]:
     try:
         screens = session.query(Screen).join(SessionTable, Screen.sessionID == SessionTable.sessionID).filter(SessionTable.userID == user_id).all()
         # Calculate total screen time for the session
