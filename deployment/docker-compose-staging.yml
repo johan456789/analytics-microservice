@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  analytics:
+    image: hicsail/analytics-service:main
+    ports:
+      - 8001:8000
+    depends_on:
+      mysql:
+        condition: service_healthy
+  mysql:
+    image: mysql/mysql-server:5.7
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 55

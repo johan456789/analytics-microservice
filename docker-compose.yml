@@ -1,0 +1,26 @@
+version: '3.9'
+services:
+  app:
+    build: .
+    ports:
+      - 8000:8000
+    environment:
+      - DB_CONNECTION_STRING=mysql+pymysql://root:root@mysql:3306/analytics
+    depends_on:
+      mysql:
+        condition: service_healthy
+  mysql:
+    image: mysql/mysql-server:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: analytics
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 55
