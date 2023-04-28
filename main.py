@@ -1,23 +1,25 @@
+import json
+from typing import List
+
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime
-import MySQLdb
+from datetime import datetime, timedelta
+from sqlalchemy.orm import declarative_base
+import traceback
 
 app = FastAPI()
 
 # Create SQLAlchemy models
 Base = declarative_base()
 
-class User(Base):
+class UserTable(Base):
     __tablename__ = 'user'
-    id = Column(Integer, primary_key=True)
-    userID = Column(String(40))
+    userID = Column(String(40), primary_key=True)
 
 
-class Event(Base):
+class EventTable(Base):
     __tablename__ = 'event'
     eventID = Column(Integer, primary_key=True)
     eventName = Column(String(45))
@@ -29,12 +31,12 @@ class SessionTable(Base):
     sessionID = Column(String(40), primary_key=True)
     userID = Column(String(40))
     startTime = Column(DateTime)
-    endTime = Column(DateTime)
+    endTime = Column(DateTime, nullable=True)
 
-class Screen(Base):
+class ScreenTable(Base):
     __tablename__ = 'screen'
     screenID = Column(Integer, primary_key=True)
-    endTime = Column(DateTime)
+    endTime = Column(DateTime, nullable=True)
     startTime = Column(DateTime)
     screenName = Column(String(50))
     sessionID = Column(String(40))
@@ -42,8 +44,8 @@ class Screen(Base):
 # Function to establish a connection to the MySQL database
 def create_db_connection():
     try:
-        engine = create_engine('mysql://root:cMgpBzyj3m2KX9OD35s2@containers-us-west-145.railway.app:5515/dev')
-        return engine
+        db_engine = create_engine("mysql+pymysql://root:cMgpBzyj3m2KX9OD35s2@containers-us-west-145.railway.app:5515/dev")
+        return db_engine
     except Exception as e:
         raise HTTPException(status_code=500, detail='Failed to connect to MySQL database.')
 
@@ -74,12 +76,13 @@ def get_daily_active_users(date: datetime):
         raise HTTPException(status_code=500, detail='Failed to retrieve daily active users.')
 
 @app.get("/weekly_new_users/{date}")
-def get_weekly_new_users(date: datetime):
+def get_weekly_new_users(date: datetime) -> List[str]:
     #get user who have sessions with starttime within the last 14 days
     try:
-        result = session.query(SessionTable.userID).filter(SessionTable.startTime >= date - datetime.timedelta(days=14)).distinct().all()
-        #return in json format
-        return JSONResponse(content=result)
+        result = session.query(SessionTable.userID).filter(SessionTable.startTime >= date - timedelta(days=14)).distinct().all()
+        users = [row.userID for row in result]
+        d = {"users": users}
+        return JSONResponse(status_code=200, content=d)
     except Exception as e:
         raise HTTPException(status_code=500, detail='Failed to retrieve weekly new users.')
 
@@ -91,4 +94,5 @@ def get_monthly_active_users(date: datetime):
         #return in json format
         return JSONResponse(content=result)
     except Exception as e:
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail='Failed to retrieve monthly active users.')

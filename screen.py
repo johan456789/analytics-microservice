@@ -1,11 +1,11 @@
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Optional
+from main import *
+import traceback
 
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
+from session import is_valid_datetime, endTime_conflicts_startTime
 
 Base = declarative_base()
 
@@ -22,38 +22,31 @@ class CloseScreenItem(BaseModel):
     endTime: str
 
 
-class Screen(Base):
-    __tablename__ = 'screen'
-    screenID = Column(INT, primary_key=true)
-    sessionID = Column(VARCHAR, ForeignKey('session.sessionID'))
-    screenName = Column(VARCHAR)
-    startTime = Column(VARCHAR)
-    endTime = Column(VARCHAR, nullable=True)
-
-class session(Base):
-    __tablename__ = 'session'
-    sessionID = Column(VARCHAR, primary_key=true)
-    userID = Column(VARCHAR, ForeignKey('user.userID'))
-    startTime = Column(VARCHAR, nullable=False)
-    endTime = Column(VARCHAR, nullable=True)
-
 screen_return_response_400 = {
     "missing_sessionID": {"status code":400, "message":"missing required field: sessionID"},
     "missing_screenName": {"status code":400, "message":"missing required field: screenName"},
     "missing_startTime": {"status code":400, "message":"missing required field: startTime"},
     "missing_screenID":{"status code":400, "message":"missing required field: screenID"},
     "missing_endTime":{"status code":400, "message":"missing required field: endTime"},
-    "sessionID_not_match_screenID":{"status code":400, "message":"sessisonID does not match screenID"},
+    "sessionID_not_match_screenID":{"status code":400, "message":"sessionID does not match screenID"},
     "screenName_not_match_screenID":{"status code":400, "message":"screenName does not match screenID"},   
     "screenID_not_exist":{"status code":400, "message":"screenID does not exists"},
     "session_not_exists":{"status code":400, "message":"sessionID does not exists"},
-    "endTime_already_exists":{"status code":400, "message":"screenID already had endTime"}
+    "invalid_datetime": {"status code": 400,
+                         "message": "provided datetime is either not in mysql datetime format nor an invalid datetime"},
+    "endTime_already_exists":{"status code":400, "message":"screenID already had endTime"},
+    "endTime_conflict_startTime": {"status code": 400, "message": "endTime conflicts with startTime"}
 }
 
 screen_return_response_200 = {
     "recorded_screen":{"status code":200, "message":"Set current screen successfully"},
     "set_screen_close_time":{"status code":200, "message":"Set screen endTime successfully"}
 }
+
+
+db_connection = create_db_connection()
+Session = sessionmaker(bind=db_connection)
+db_session = Session()
 
 
 app = FastAPI()
@@ -63,50 +56,48 @@ app = FastAPI()
 Why use this:
     To set the close time of the screen. When a user closes a screen, the app can call this API to record the time that
     the user closes the screen
-Required JSON parameters:
-    screenID: VARCHAR 
-    sessionID: VARCHAR 
-    screenName: VARCHAR 
-    endTime: DATETIME (UTC)
 """
-@app.post("/api/analysis/closeCurrentScreen/")
+@app.post("/api/analysis/update-current-screen-endTime/")
 async def close_current_screen(item:CloseScreenItem):
-    # try:
-    if item.sessionID is None or item.sessionID == "":
-        return JSONResponse(status_code=400,content=screen_return_response_400["missing_sessionID"])
-    if item.screenID is None or item.screenID == "":
-        return JSONResponse(status_code=400,content=screen_return_response_400["missing_screenID"])
-    if item.screenName is None or item.screenName == "":
-        return JSONResponse(status_code=400,content=screen_return_response_400["missing_screenName"])
-    if item.endTime is None or item.endTime == "":
-        return JSONResponse(status_code=400, content=screen_return_response_400["missing_endTime"])
-    else:
-        if not userSessionExists(item.sessionID):
-            return JSONResponse(status_code=400,content=screen_return_response_400["session_not_exists"])
-        row_check_result = checkCloseScreenRow(item)
-        if row_check_result == "screenID not found":
-            return JSONResponse(status_code=400, content=screen_return_response_400["screenID_not_exist"])
-        if row_check_result == "sessionID does not match screenID":
-            return JSONResponse(status_code=400, content=screen_return_response_400["sessionID_not_match_screenID"])
-        if row_check_result == "screenName does not match":
-            return JSONResponse(status_code=400, content=screen_return_response_400["screenName_not_match_screenID"])
-        if row_check_result == "endTime is not null":
-            return JSONResponse(status_code=400, content=screen_return_response_400["endTime_already_exists"])
+    try:
+        if item.sessionID is None or item.sessionID == "":
+            return JSONResponse(status_code=400,content=screen_return_response_400["missing_sessionID"])
+        if item.screenID is None or item.screenID == "":
+            return JSONResponse(status_code=400,content=screen_return_response_400["missing_screenID"])
+        if item.screenName is None or item.screenName == "":
+            return JSONResponse(status_code=400,content=screen_return_response_400["missing_screenName"])
+        if item.endTime is None or item.endTime == "":
+            return JSONResponse(status_code=400, content=screen_return_response_400["missing_endTime"])
+        if not is_valid_datetime(item.endTime):
+            return JSONResponse(status_code=400, content=screen_return_response_400["invalid_datetime"])
         else:
-            updateScreenEndTime(item)
-            return JSONResponse(status_code=200, content=screen_return_response_200["set_screen_close_time"])
-    # except Exception as e:
-    #     print("Here")
-    #     print(e)
-        # raise HTTPException(status_code=500, detail={"status_code":500, "message":str(e)})
+            if not userSessionExists(item.sessionID):
+                return JSONResponse(status_code=400,content=screen_return_response_400["session_not_exists"])
+            row_check_result = checkCloseScreenRow(item)
+            if row_check_result == "screenID not found":
+                return JSONResponse(status_code=400, content=screen_return_response_400["screenID_not_exist"])
+            if row_check_result == "endTime conflicts startTime":
+                return JSONResponse(status_code=400, content=screen_return_response_400["endTime_conflict_startTime"])
+            if row_check_result == "sessionID does not match screenID":
+                return JSONResponse(status_code=400, content=screen_return_response_400["sessionID_not_match_screenID"])
+            if row_check_result == "screenName does not match":
+                return JSONResponse(status_code=400, content=screen_return_response_400["screenName_not_match_screenID"])
+            if row_check_result == "endTime is not null":
+                return JSONResponse(status_code=400, content=screen_return_response_400["endTime_already_exists"])
+            else:
+                updateScreenEndTime(item)
+                return JSONResponse(status_code=200, content=screen_return_response_200["set_screen_close_time"])
+    except Exception as e:
+        traceback.print_exc()
+        db_session.rollback()
+        raise HTTPException(status_code=500, detail={"status_code":500, "message":str(e)})
 
 """
 Why use this:
     To update the endTime of a screen whose screenID matches the one provided in the CloseScreenItem
 """
 def updateScreenEndTime(item: CloseScreenItem):
-    db_session = getSession()
-    row = db_session.query(Screen).filter_by(screenID=item.screenID).first()
+    row = db_session.query(ScreenTable).filter_by(screenID=item.screenID).first()
     row.endTime = item.endTime
     db_session.commit()
 
@@ -117,15 +108,16 @@ Why use this:
     unmatched, it will return a message, so the function that calls this function will return 400 response
 """
 def checkCloseScreenRow(item: CloseScreenItem):
-    db_session = getSession()
-    result = db_session.query(Screen).filter_by(screenID=item.screenID).first()
+    result = db_session.query(ScreenTable).filter_by(screenID=item.screenID).first()
     if result is None:
         return "screenID not found"
     if result.sessionID != item.sessionID:
         return "sessionID does not match screenID"
     if result.screenName != item.screenName:
         return "screenName does not match"
-    if result.endTime != None:
+    if endTime_conflicts_startTime(result.startTime,item.endTime):
+        return "endTime conflicts startTime"
+    if result.endTime is not None:
         return "endTime is not null"
 
 """
@@ -135,40 +127,38 @@ Why use it:
 #TODO: Put the screenID into the response
 @app.post("/api/analysis/setCurrentScreen/")
 async def set_current_screen(item:RecordScreenItem):
-    # try:
-    if item.sessionID is None or item.sessionID == "":
-        return JSONResponse(status_code=400,content=screen_return_response_400["missing_sessionID"])
-    if item.screenName is None or item.screenName == "":
-        return JSONResponse(status_code=400,content=screen_return_response_400["missing_screenName"])
-    if item.startTime is None or item.startTime == "":
-        return JSONResponse(status_code=400,content=screen_return_response_400["missing_startTime"])
-    else:
-        if not userSessionExists(item.sessionID):
-            return JSONResponse(status_code=400,content=screen_return_response_400["session_not_exists"])
+    try:
+        if item.sessionID is None or item.sessionID == "":
+            return JSONResponse(status_code=400,content=screen_return_response_400["missing_sessionID"])
+        if item.screenName is None or item.screenName == "":
+            return JSONResponse(status_code=400,content=screen_return_response_400["missing_screenName"])
+        if item.startTime is None or item.startTime == "":
+            return JSONResponse(status_code=400,content=screen_return_response_400["missing_startTime"])
+        if not is_valid_datetime(item.startTime):
+            return JSONResponse(status_code=400,content=screen_return_response_400["invalid_datetime"])
         else:
-            recorded_screen = Screen(sessionID=item.sessionID,screenName=item.screenName, startTime=item.startTime)
-            db_session=getSession()
-            db_session.add(recorded_screen)
-            db_session.commit()
-            return JSONResponse(status_code=200, content=screen_return_response_200["recorded_screen"])
-    # except Exception as e:
-    #     print("Here")
-    #     print(e)
-        # raise HTTPException(status_code=500, detail={"status_code":500, "message":str(e)})
+            if not userSessionExists(item.sessionID):
+                return JSONResponse(status_code=400,content=screen_return_response_400["session_not_exists"])
+            else:
+                recorded_screen = ScreenTable(sessionID=item.sessionID,screenName=item.screenName, startTime=item.startTime)
+                db_session.add(recorded_screen)
+                db_session.flush()
+                db_session.commit()
+                db_session.refresh(recorded_screen)
+                data = screen_return_response_200["recorded_screen"]
+                data["screenID"] = recorded_screen.screenID
+                return JSONResponse(status_code=200, content=data)
+    except Exception as e:
+        traceback.print_exc()
+        db_session.rollback()
+        raise HTTPException(status_code=500, detail={"status_code":500, "message":str(e)})
 
 
 def getEngine():
     return create_engine("mysql+pymysql://root:cMgpBzyj3m2KX9OD35s2@containers-us-west-145.railway.app:5515/dev")
 
 
-def getSession():
-    engine = getEngine()
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
-
 def userSessionExists(targetSessionID):
-    db_session = getSession()
-    result = db_session.query(session).filter(session.sessionID==targetSessionID)
+    result = db_session.query(SessionTable).filter(SessionTable.sessionID==targetSessionID)
     return len(result.all())==1 
 
