@@ -1,6 +1,10 @@
 version: '3.9'
 services:
   analytics:
+    container_name: analytics
+    restart: always
+    env_file:
+      - ../stack.env
     image: hicsail/analytics-service:main
     ports:
       - 8001:8000
@@ -8,6 +12,10 @@ services:
       mysql:
         condition: service_healthy
   mysql:
+    container_name: mysql
+    restart: always
+    env_file:
+      - ../stack.env
     image: mysql/mysql-server:5.7
     ports:
       - 3306:3306
