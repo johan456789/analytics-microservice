@@ -15,7 +15,7 @@ def get_user_screen_time(user_id: str, screen_id: int) -> JSONResponse:
         if screen:
             # Calculate total screen time for the screen
             if screen.startTime and screen.endTime:
-                total_screen_time = screen.endTime - screen.startTime + timedelta(minutes=10)
+                total_screen_time = screen.endTime - screen.startTime
 
                 # Return total screen time in seconds
                 return JSONResponse(content={"user_id": user_id, "screen_id": screen_id, "screen_time": total_screen_time.total_seconds()})
