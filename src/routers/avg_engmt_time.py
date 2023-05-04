@@ -5,9 +5,11 @@ from ..database import session
 
 router = APIRouter()
 
-# Calculate the average engagement time for a given user for the selected time period
 @router.get("/avg_engagement_time/{user_id}/{time_period}", response_model=None)
 def get_average_engagement(user_id: str, time_period: int) -> JSONResponse:
+    """
+    Calculate the average engagement time for a given user for the selected time period
+    """
     try:
         # Get the sessions for the user
         sessions = session.query(Session).filter_by(userID=user_id).all()
