@@ -1,9 +1,9 @@
 import uuid
-from main import *
-from session import user_exists
-from schemas import *
-from database import create_db_session
-from models import *
+from .main import *
+from .session import user_exists
+from .schemas import *
+from .database import create_db_session
+from .models import *
 import traceback
 
 
