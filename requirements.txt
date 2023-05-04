@@ -5,3 +5,4 @@ uvicorn[standard]
 SQLAlchemy
 pymysql
 pytest
+pydantic
