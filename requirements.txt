@@ -1,8 +1,7 @@
-datetime
-fastapi
-httpx
-uvicorn[standard]
-SQLAlchemy
-pymysql
-pytest
-pydantic
+fastapi==0.95.0
+PyMySQL==1.0.2
+SQLAlchemy==1.4.46
+uvicorn==0.21.1
+pytest==7.3.1
+httpx==0.24.0
+python-dotenv==1.0.0
