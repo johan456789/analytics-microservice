@@ -6,7 +6,7 @@ from typing import List
 from ..models import *
 from ..schemas import *
 from ..database import session
-from ..session import user_exists
+from utils.utils import user_exists
 
 router = APIRouter()
 
