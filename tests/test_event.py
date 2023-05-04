@@ -40,7 +40,7 @@ def test_add_event_successfully():
             "eventName": "scroll",
             "occurTime": "2023-04-19 12:30:45"
             }
-        add_event_response = client.post("/api/analysis/record-event/", json=event_payload)
+        add_event_response = client.post("/event/record", json=event_payload)
         assert add_event_response.status_code == 200
         add_event_response = json.loads(add_event_response.content.decode('utf-8'))
         assert add_event_response['status code'] == 200
@@ -73,7 +73,7 @@ def test_missing_sessionID():
             "eventName": "scroll",
             "occurTime": "2023-04-19 12:30:45"
             }
-        add_event_response = client.post("/api/analysis/record-event/", json=event_payload)
+        add_event_response = client.post("/event/record", json=event_payload)
         add_event_response = json.loads(add_event_response.content.decode('utf-8'))
         assert add_event_response['status code'] == 400
         assert add_event_response['message'] == "missing required field: sessionID"
@@ -102,7 +102,7 @@ def test_missing_eventName():
             "eventName": "",
             "occurTime": "2023-04-19 12:30:45"
             }
-        add_event_response = client.post("/api/analysis/record-event/", json=event_payload)
+        add_event_response = client.post("/event/record", json=event_payload)
         add_event_response = json.loads(add_event_response.content.decode('utf-8'))
         assert add_event_response['status code'] == 400
         assert add_event_response['message'] == "missing required field: eventName"
@@ -130,7 +130,7 @@ def test_missing_occurTime():
             "eventName": "scroll",
             "occurTime": ""
             }
-        add_event_response = client.post("/api/analysis/record-event/", json=event_payload)
+        add_event_response = client.post("/event/record", json=event_payload)
         add_event_response = json.loads(add_event_response.content.decode('utf-8'))
         assert add_event_response['status code'] == 400
         assert add_event_response['message'] == "missing required field: occurTime"
@@ -151,7 +151,7 @@ def test_invalid_sessionID():
             "eventName": "scroll",
             "occurTime": "2023-04-19 12:30:45"
             }
-        add_event_response = client.post("/api/analysis/record-event/", json=event_payload)
+        add_event_response = client.post("/event/record", json=event_payload)
         add_event_response = json.loads(add_event_response.content.decode('utf-8'))
         assert add_event_response['status code'] == 400
         assert add_event_response['message'] == "SessionID does not exists"
@@ -180,7 +180,7 @@ def test_invalid_time():
             "eventName": "scroll",
             "occurTime": "2023-04-19"
             }
-        add_event_response = client.post("/api/analysis/record-event/", json=event_payload)
+        add_event_response = client.post("/event/record", json=event_payload)
         add_event_response = json.loads(add_event_response.content.decode('utf-8'))
         assert add_event_response['status code'] == 400
         assert add_event_response['message'] == "provided datetime is either not in mysql datetime format nor an invalid datetime"
