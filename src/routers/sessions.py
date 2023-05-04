@@ -1,12 +1,9 @@
-from datetime import datetime
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
-from sqlalchemy.orm import declarative_base
-from ..main import *
+from ..models import Session
+from ..schemas import EndTimeItem, RecordSessionItem
 from ..database import session
-from ..models import *
-from ..schemas import *
-from utils.utils import user_exists
+from utils.utils import endTime_conflicts_startTime, is_valid_datetime, user_exists
 import traceback
 
 """
@@ -121,16 +118,7 @@ async def update_session_end_time(item:EndTimeItem):
 
 
 
-def endTime_conflicts_startTime(startTime, endTime):
-    """
-    Use it to check if the startTime and endTime conflict, i.e. endTime is earlier than startTime
-    """
-    date_format = '%Y-%m-%d %H:%M:%S'
-    if not isinstance(startTime, datetime):
-        startTime = datetime.strptime(startTime, date_format)
-    if not isinstance(endTime, datetime):
-        endTime = datetime.strptime(endTime, date_format)
-    return endTime <= startTime
+
 
 
 def get_session_row_in_session_table(target_sessionID):
@@ -165,19 +153,3 @@ def updateSessionEndTime(item:EndTimeItem):
     row = session.query(Session).filter_by(sessionID=item.sessionID).first()
     row.endTime = item.endTime
     session.commit()
-
-
-def is_valid_datetime(datetime_str):
-    """
-    Use it to check if a datetime is valid.
-    The definition of valid: the datetime_str is a UTC time in string format. It must meet the date_format defined
-    in the function below, and it needs to be earlier than the current UTC time.
-    """
-    try:
-        date_format = '%Y-%m-%d %H:%M:%S'
-        datetime_obj = datetime.strptime(datetime_str, date_format)
-        return datetime_obj < datetime.utcnow()
-    except ValueError:
-        return False
-
-

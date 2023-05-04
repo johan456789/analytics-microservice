@@ -1,9 +1,8 @@
-import uuid
-
+import traceback
 from fastapi.testclient import TestClient
-from src.screen import *
 import json
-from src.screen import app as screen_app
+from src.main import app
+from utils.utils import delete_screen_from_database
 
 """
 File description:
@@ -11,7 +10,7 @@ This is the file that contains the tests that test the POST APIs for the endpoin
 """
 
 
-screen_client = TestClient(screen_app)
+client = TestClient(app)
 
 """
 If test fails, be sure to check if the "user_id_for_testing" and "session_id_for_testing" exist
@@ -28,7 +27,7 @@ def test_add_screen_to_database_successfully():
             "screenName": "personal page",
             "startTime": "2023-05-02 12:30:45"
         }
-        add_event_response = screen_client.post("/api/analysis/setCurrentScreen/", json=screen_payload)
+        add_event_response = client.post("/api/analysis/setCurrentScreen/", json=screen_payload)
         assert add_event_response.status_code == 200
         add_event_response = json.loads(add_event_response.content.decode('utf-8'))
         assert add_event_response['status code'] == 200
@@ -47,7 +46,7 @@ def test_update_screen_close_time_in_database_successfully():
             "screenName": "personal page",
             "startTime": "2023-05-02 12:30:45"
         }
-        add_event_response = screen_client.post("/api/analysis/setCurrentScreen/", json=screen_payload)
+        add_event_response = client.post("/api/analysis/setCurrentScreen/", json=screen_payload)
         assert add_event_response.status_code == 200
         add_event_response = json.loads(add_event_response.content.decode('utf-8'))
         assert add_event_response['message'] == "Set current screen successfully"
@@ -60,7 +59,7 @@ def test_update_screen_close_time_in_database_successfully():
             "screenName": "personal page",
             "endTime": "2023-05-02 13:30:45"
         }
-        close_event_response = screen_client.post("/api/analysis/update-current-screen-endTime/", json=close_screen_payload)
+        close_event_response = client.post("/api/analysis/update-current-screen-endTime/", json=close_screen_payload)
         assert close_event_response.status_code == 200
         decoded_close_event_response = json.loads(close_event_response.content.decode('utf-8'))
         assert decoded_close_event_response['message'] == "Set screen endTime successfully"
@@ -78,7 +77,7 @@ def test_add_screen_with_endTime_to_database_successfully():
             "startTime": "2023-05-02 12:30:45",
             "endTime": "2023-05-02 13:30:45"
         }
-        add_event_response = screen_client.post("/api/analysis/setCurrentScreen/", json=screen_payload)
+        add_event_response = client.post("/api/analysis/setCurrentScreen/", json=screen_payload)
         assert add_event_response.status_code == 200
         add_event_response = json.loads(add_event_response.content.decode('utf-8'))
         assert add_event_response['status code'] == 200

@@ -3,8 +3,8 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from datetime import datetime, timedelta
 from typing import List
-from ..models import *
-from ..schemas import *
+from ..models import Session, User
+from ..schemas import InsertUserItem
 from ..database import session
 from utils.utils import user_exists
 
@@ -68,7 +68,6 @@ async def record_user(item:InsertUserItem):
             raise HTTPException(412, detail=user_response[412])
         else:
             if user_exists(item.userID):
-                print("user exists already")
                 raise HTTPException(413, detail=user_response[413])
             else:
                 new_user = User(userID=item.userID)
@@ -89,5 +88,3 @@ def is_valid_uuid(uuid_string):
     except ValueError:
         return False
     return str(uuid_obj) == uuid_string
-
-
