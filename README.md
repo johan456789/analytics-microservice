@@ -15,8 +15,8 @@ This project is to build APIs for BU SAIL's analytical microservice. Due to priv
 ### Deployment:
 https://github.com/hicsail/analytics-microservice/blob/main/DEPLOYMENT.md
 
-## Detailed instructions on how to run our project:
-## Setup
+### Detailed instructions on how to run our project:
+### Setup
 ### HIGHLY recommand create a virtual environment first!
 ### Install prerequisites
 
