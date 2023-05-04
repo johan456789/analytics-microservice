@@ -1,24 +1,21 @@
 import uuid
 
 from fastapi.testclient import TestClient
-from src.user import delete_user_from_database
-from src.session import *
+from utils.utils import delete_user_from_database, delete_session_from_database
 import json
-from src.session import app as session_app
-from src.user import app as user_app
+from src.main import app
 
 
 non_existing_userID = uuid.uuid4()
 
-session_client = TestClient(session_app)
-user_client = TestClient(user_app)
+client = TestClient(app)
 
 def test_add_session_with_non_existing_userID():
     payload = { "userID": str(non_existing_userID),
                 "sessionID": "94b0af25-ca4f-4d4b-b539-6058ffb64ba3",
                 "startTime":"2023-04-19 12:30:45"
                 }
-    response = session_client.post("/api/analysis/record-session-start-time/", json=payload)
+    response = client.post("/api/analysis/record-session-start-time/", json=payload)
     assert response.status_code == 400
     json_response = json.loads(response.content.decode('utf-8'))
     assert json_response['status code'] == 400
@@ -30,7 +27,7 @@ def test_add_session_successfully():
     new_session_id = uuid.uuid4()
     try:
         payload = {"userID":str(new_user_id)}
-        response = user_client.post("/api/analysis/add-user/",json=payload)
+        response = client.post("/api/analysis/add-user/",json=payload)
         add_user_response = json.loads(response.content.decode('utf-8'))
         assert add_user_response['status code'] == 200
         assert add_user_response['message'] == "Added user successfully"
@@ -38,7 +35,7 @@ def test_add_session_successfully():
                     "sessionID": str(new_session_id),
                     "startTime":"2023-04-19 12:30:45"
                     }
-        response = session_client.post("/api/analysis/record-session-start-time/", json=payload)
+        response = client.post("/api/analysis/record-session-start-time/", json=payload)
         assert response.status_code == 200
         add_session_response = json.loads(response.content.decode('utf-8'))
         assert add_session_response['status code'] == 200
@@ -55,7 +52,7 @@ def insert_test_duplicated_session():
     new_session_id = uuid.uuid4()
     try:
         payload = {"userID":str(new_user_id)}
-        response = user_client.post("/api/analysis/add-user/",json=payload)
+        response = client.post("/api/analysis/add-user/",json=payload)
         add_user_response = json.loads(response.content.decode('utf-8'))
         assert add_user_response['status code'] == 200
         assert add_user_response['message'] == "Added user successfully"
@@ -64,13 +61,13 @@ def insert_test_duplicated_session():
                     "sessionID": str(new_session_id),
                     "startTime":"2023-04-19 12:30:45"
                     }
-        response = session_client.post("/api/analysis/record-session-start-time/", json=payload)
+        response = client.post("/api/analysis/record-session-start-time/", json=payload)
         assert response.status_code == 200
         add_session_response = json.loads(response.content.decode('utf-8'))
         assert add_session_response['status code'] == 200
         assert add_session_response['message'] == "Recorded session start time successfully"
         #re-insert the same session ID:
-        another_response = session_client.post("/api/analysis/record-session-start-time/", json=payload)
+        another_response = client.post("/api/analysis/record-session-start-time/", json=payload)
         assert another_response.status_code == 400
         add_session_response = json.loads(response.content.decode('utf-8'))
         assert add_session_response['status code'] == 400

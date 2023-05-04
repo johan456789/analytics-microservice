@@ -1,11 +1,12 @@
 from datetime import datetime
-from fastapi import HTTPException
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import declarative_base
-from .main import *
-from .database import create_db_session
-from .models import *
-from .schemas import *
+from ..main import *
+from ..database import session
+from ..models import *
+from ..schemas import *
+from utils.utils import user_exists
 import traceback
 Base = declarative_base()
 
@@ -44,13 +45,10 @@ return_response_200 = {
 
 
 
-app = FastAPI()
+router = APIRouter()
 
 
-db_session = create_db_session()
-
-
-@app.post("/api/analysis/record-session-start-time/")
+@router.post("/api/analysis/record-session-start-time/")
 async def record_session_start_time(item:RecordSessionItem):
     '''
     Use this endpoint to store a session into the database
@@ -73,17 +71,17 @@ async def record_session_start_time(item:RecordSessionItem):
                 return JSONResponse(status_code=400,content=return_response_400["session_already_exists"])
             else:
                 recorded_session = Session(sessionID=item.sessionID, userID=item.userID, startTime=item.startTime, endTime=item.endTime)
-                db_session.add(recorded_session)
-                db_session.commit()
+                session.add(recorded_session)
+                session.commit()
                 return JSONResponse(status_code=200, content=return_response_200["recorded_session_start_time"])
     except Exception as e:
         traceback.print_exc()
-        db_session.rollback()
+        session.rollback()
         raise HTTPException(status_code=500, detail={"status_code":500, "message":str(e)})
 
 
 
-@app.post("/api/analysis/update-session-end-time/")
+@router.post("/api/analysis/update-session-end-time/")
 async def update_session_end_time(item:EndTimeItem):
     '''
     Use this endpoint to update the end time of a session into the database
@@ -115,7 +113,7 @@ async def update_session_end_time(item:EndTimeItem):
             return JSONResponse(status_code=200, content=return_response_200["recorded_session_end_time"])
     except Exception as e:
         traceback.print_exc()
-        db_session.rollback()
+        session.rollback()
         raise HTTPException(status_code=500, detail={"status_code": 500, "message": str(e)})
 
 
@@ -136,25 +134,15 @@ def get_session_row_in_session_table(target_sessionID):
     """
     Use it to get a session from the database whose sessionID matches the parameter target_sessionID
     """
-    result = db_session.query(Session).filter_by(sessionID=target_sessionID).first()
+    result = session.query(Session).filter_by(sessionID=target_sessionID).first()
     return result
-
-
-def user_exists(targetUserID):
-    """
-    Use it to check if a user whose userID matches the targetUserID exists in the User table
-    """
-    db_session = create_db_session()
-    user_exists_result = db_session.query(User).filter_by(userID=targetUserID).first() is not None
-    return user_exists_result
-
 
 
 def user_session_match(targetUserID, targetSessionID):
     """
     Use it to check if there exists a session whose userID and sessionID match the targetUserID and targetSessionID
     """
-    result = db_session.query(Session).filter(Session.userID == targetUserID, Session.sessionID == targetSessionID)
+    result = session.query(Session).filter(Session.userID == targetUserID, Session.sessionID == targetSessionID)
     return len(result.all())==1 
 
 
@@ -162,8 +150,7 @@ def endTimeExists(targetUserID, targetSessionID):
     """
     Use it to check if the session row that has the targetSessionID has endTime column filled already.
     """
-    db_session = create_db_session()
-    result = db_session.query(Session).filter(Session.userID == targetUserID, Session.sessionID == targetSessionID)
+    result = session.query(Session).filter(Session.userID == targetUserID, Session.sessionID == targetSessionID)
     for row in result:
         return row.endTime is not None
 
@@ -172,9 +159,9 @@ def updateSessionEndTime(item:EndTimeItem):
     """
     Use it to update a session row's endTime in the database
     """
-    row = db_session.query(Session).filter_by(sessionID=item.sessionID).first()
+    row = session.query(Session).filter_by(sessionID=item.sessionID).first()
     row.endTime = item.endTime
-    db_session.commit()
+    session.commit()
 
 
 def is_valid_datetime(datetime_str):
@@ -190,18 +177,4 @@ def is_valid_datetime(datetime_str):
     except ValueError:
         return False
 
-
-def delete_session_from_database(sessionID):
-    """
-    Use it to delete a session row in the database whose session id matches the given sessionID
-    """
-    try:
-        target_session = db_session.query(Session).filter_by(sessionID=sessionID).first()
-        db_session.delete(target_session)
-        db_session.commit()
-        db_session.close()
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
-        db_session.rollback()
 

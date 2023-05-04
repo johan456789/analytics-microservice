@@ -1,6 +1,6 @@
 import traceback
-from src.database import session
 from src.models import User, Session
+from src.database import session
 
 def delete_user_from_database(user_uuid):
     """
