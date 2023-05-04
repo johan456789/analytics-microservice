@@ -8,8 +8,11 @@ from ..models import *
 from ..schemas import *
 from utils.utils import user_exists
 import traceback
-Base = declarative_base()
 
+"""
+File description:
+This is the file that contains the POST endpoints related to session
+"""
 
 """
 What it is:
