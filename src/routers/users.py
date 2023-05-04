@@ -23,7 +23,7 @@ user_response = {
     413: {"status_code":413,"description": "User with the provided userID already exists"}
 }
 
-@router.get("/daily_active_users/{date}")
+@router.get("/users/daily/{date}")
 def get_daily_active_users(date: datetime) -> List[str]:
     '''
     get users who have sessions with start time on the given date
@@ -34,8 +34,8 @@ def get_daily_active_users(date: datetime) -> List[str]:
     except Exception as e:
         raise HTTPException(status_code=500, detail='Failed to retrieve daily active users.')
 
-@router.get("/weekly_new_users/{date}")
-def get_weekly_new_users(date: datetime) -> List[str]:
+@router.get("/users/weekly/{date}")
+def get_weekly_active_users(date: datetime) -> List[str]:
     '''
     get user who have sessions with start time within the last 14 days
     '''
@@ -45,7 +45,7 @@ def get_weekly_new_users(date: datetime) -> List[str]:
     except Exception as e:
         raise HTTPException(status_code=500, detail='Failed to retrieve weekly new users.')
 
-@router.get("/monthly_active_users/{date}")
+@router.get("/users/monthly/{date}")
 def get_monthly_active_users(date: datetime) -> List[str]:
     '''
     get users who have sessions with start time within the last 30 days
@@ -56,7 +56,7 @@ def get_monthly_active_users(date: datetime) -> List[str]:
     except Exception as e:
         raise HTTPException(status_code=500, detail='Failed to retrieve monthly active users.')
 
-@router.post("/api/analysis/add-user/", responses=user_response)
+@router.post("/users/add", responses=user_response)
 async def record_user(item:InsertUserItem):
     """
     Use it to insert a user with userID into the User database
