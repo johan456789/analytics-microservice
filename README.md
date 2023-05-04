@@ -11,8 +11,7 @@ The application is a FastAPI that contains the APIs we wrote. The FastAPI is tre
 
 
 ## Issues of current project
-1. old database connection still exists in commit hisotry https://github.com/hicsail/analytics-microservice/issues/29
-2. (session.py)"delete_session_from_database" function shows mapping error https://github.com/hicsail/analytics-microservice/issues/22
+1. (session.py)"delete_session_from_database" function shows mapping error https://github.com/hicsail/analytics-microservice/issues/22
 3. add database connection string to GitHub Secrets for CI https://github.com/hicsail/analytics-microservice/issues/15
 
 ## Deployment
