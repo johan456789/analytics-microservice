@@ -1,12 +1,28 @@
 import json
+from fastapi import HTTPException
 from src.main import *
 from fastapi.testclient import TestClient
 import uuid
-from src.user import *
-from src.user import app
+import traceback
+from src.main import app
 
 
 client = TestClient(app)
+
+from src.database import session
+def delete_user_from_database(user_uuid):
+    """
+    Use it to delete this user in the database whose userID matches the parameter user_uuid
+    """
+    try:
+        user = session.query(User).filter_by(userID=user_uuid).first()
+        session.delete(user)
+        session.commit()
+        session.close()
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
+        session.rollback()
 
 
 def test_add_user_successfully():
