@@ -19,3 +19,21 @@ class EndTimeItem(BaseModel):
     userID: str
     sessionID: str
     endTime: str
+
+class RecordEventItem(BaseModel):
+    sessionID: str
+    eventName: str
+    occurTime: str
+
+
+class RecordScreenItem(BaseModel):
+    sessionID: str
+    screenName: str
+    startTime: str
+
+
+class CloseScreenItem(BaseModel):
+    screenID: int
+    sessionID: str
+    screenName: str
+    endTime: str
