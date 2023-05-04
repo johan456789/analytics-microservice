@@ -5,7 +5,7 @@ The application will be deployed by BU SAIL into one of their docker application
 Dockerfile and docker-compose.yml. However, since we are developing a microservice, after BU SAIL retreive our code, they can deploy
 our application on anywhere they want as long as they have the requirements that we specify in the requirements.txt installed in the running environment
 
-Dockerfile: https://github.com/hicsail/analytics-microservice/blob/main/Dockerfile
+Dockerfile: https://github.com/hicsail/analytics-microservice/blob/main/Dockerfile  
 docker-compose.yml: https://github.com/hicsail/analytics-microservice/blob/main/docker-compose.yml
 
 
