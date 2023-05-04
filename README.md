@@ -1,12 +1,12 @@
 # analytics-microservice
 
-### brief overview of the project:
+### Brief overview of the project:
 This project is to build APIs for BU SAIL's analytical microservice. Due to privacy protection rule (HIPAA), BU SAIL is unable to use existing analytical services, so we are building APIs that are albe to store and retrieve information of users that interact with BU SAIL, and BU SAIL can deploy our APIs to their microservice to have their own analytical microservice. Because our APIs will manage the users data in BU SAIL's private database, so BU SAIL's  analytical microservice which runs our APIs will follow the privacy protection rule. 
 
-### technical architecture and explanation
+### Technical architecture and explanation
 
 
-### Detailed instructions on how to run our project:
+
 
 
 ### Issues of current project:
@@ -15,9 +15,9 @@ This project is to build APIs for BU SAIL's analytical microservice. Due to priv
 ### Deployment:
 https://github.com/hicsail/analytics-microservice/blob/main/DEPLOYMENT.md
 
-
+## Detailed instructions on how to run our project:
 ## Setup
-
+### HIGHLY recommand create a virtual environment first!
 ### Install prerequisites
 
 ```shell
