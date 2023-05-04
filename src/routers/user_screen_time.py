@@ -1,12 +1,12 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
-from sqlalchemy.orm import sessionmaker
-from datetime import datetime, timedelta
-from .main import *
-from .models import *
-from .database import *
+from ..models import Screen, Session
+from ..database import session
 
-@app.get("/userScreenTime/{user_id}/{screen_id}", response_model=None)
+
+router = APIRouter()
+
+@router.get("/userScreenTime/{user_id}/{screen_id}", response_model=None)
 def get_user_screen_time(user_id: str, screen_id: int) -> JSONResponse:
     try:
         # Get all sessions for the given user

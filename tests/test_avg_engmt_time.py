@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from src.avg_engmt_time import app
+from src.main import app
 
 client = TestClient(app)
 

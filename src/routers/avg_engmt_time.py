@@ -1,12 +1,12 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
-from datetime import datetime, timedelta
-from .main import *
-from .models import *
-from .database import *
+from ..models import Session
+from ..database import session
+
+router = APIRouter()
 
 # Calculate the average engagement time for a given user for the selected time period
-@app.get("/averageEngagementTime/{user_id}/{time_period}", response_model=None)
+@router.get("/averageEngagementTime/{user_id}/{time_period}", response_model=None)
 def get_average_engagement(user_id: str, time_period: int) -> JSONResponse:
     try:
         # Get the sessions for the user

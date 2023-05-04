@@ -1,11 +1,10 @@
-from pydantic import BaseModel
-from .main import *
 import traceback
-from sqlalchemy.orm import declarative_base
-from .session import is_valid_datetime, endTime_conflicts_startTime
-from .database import create_db_session
-from .models import *
-from .schemas import *
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
+from utils.utils import is_valid_datetime, endTime_conflicts_startTime, userSessionExists
+from ..models import Screen
+from ..schemas import CloseScreenItem, RecordScreenItem
+from ..database import session
 
 
 """
@@ -37,13 +36,9 @@ screen_return_response_200 = {
 }
 
 
-db_session = create_db_session()
+router = APIRouter()
 
-
-app = FastAPI()
-
-
-@app.post("/api/analysis/update-current-screen-endTime/")
+@router.post("/api/analysis/update-current-screen-endTime/")
 async def close_current_screen(item:CloseScreenItem):
     """
     Use it to set the close time of the screen. When a user closes a screen, the app can call this API to record the time
@@ -81,7 +76,7 @@ async def close_current_screen(item:CloseScreenItem):
                 return JSONResponse(status_code=200, content=screen_return_response_200["set_screen_close_time"])
     except Exception as e:
         traceback.print_exc()
-        db_session.rollback()
+        session.rollback()
         raise HTTPException(status_code=500, detail={"status_code":500, "message":str(e)})
 
 
@@ -90,9 +85,9 @@ def updateScreenEndTime(item: CloseScreenItem):
     Use it to update the endTime of a screen whose screenID matches the one provided in the CloseScreenItem
     :param item: CloseScreenItem. Hover and click it to see its data structure
     """
-    row = db_session.query(Screen).filter_by(screenID=item.screenID).first()
+    row = session.query(Screen).filter_by(screenID=item.screenID).first()
     row.endTime = item.endTime
-    db_session.commit()
+    session.commit()
 
 
 def checkCloseScreenRow(item: CloseScreenItem):
@@ -102,7 +97,7 @@ def checkCloseScreenRow(item: CloseScreenItem):
     :param item: CloseScreenItem. Hover and click it to see its data structure
     :return: string that represent the checking result
     """
-    result = db_session.query(Screen).filter_by(screenID=item.screenID).first()
+    result = session.query(Screen).filter_by(screenID=item.screenID).first()
     if result is None:
         return "screenID not found"
     if result.sessionID != item.sessionID:
@@ -115,7 +110,7 @@ def checkCloseScreenRow(item: CloseScreenItem):
         return "endTime is not null"
 
 
-@app.post("/api/analysis/setCurrentScreen/")
+@router.post("/api/analysis/setCurrentScreen/")
 async def set_current_screen(item:RecordScreenItem):
     """
     Use it to add a screen into the screen database. The screen has the information contained in the RecordScreenItem
@@ -137,40 +132,14 @@ async def set_current_screen(item:RecordScreenItem):
                 return JSONResponse(status_code=400,content=screen_return_response_400["session_not_exists"])
             else:
                 recorded_screen = Screen(sessionID=item.sessionID,screenName=item.screenName, startTime=item.startTime)
-                db_session.add(recorded_screen)
-                db_session.flush()
-                db_session.commit()
-                db_session.refresh(recorded_screen)
+                session.add(recorded_screen)
+                session.flush()
+                session.commit()
+                session.refresh(recorded_screen)
                 data = screen_return_response_200["recorded_screen"]
                 data["screenID"] = recorded_screen.screenID
                 return JSONResponse(status_code=200, content=data)
     except Exception as e:
         traceback.print_exc()
-        db_session.rollback()
+        session.rollback()
         raise HTTPException(status_code=500, detail={"status_code":500, "message":str(e)})
-
-
-def userSessionExists(targetSessionID):
-    """
-    Use this function to check if a session that has the targetSessionID exists in the database
-    :param targetSessionID:
-    :return: True if there is session that has the targetSessionID, False if there is not.
-    """
-    result = db_session.query(Session).filter(Session.sessionID==targetSessionID)
-    return len(result.all())==1
-
-
-def delete_screen_from_database(screen_ID):
-    """
-    Use it to delete this user in the database whose userID matches the parameter user_uuid
-    """
-    try:
-        screen = db_session.query(Screen).filter_by(screenID=screen_ID).first()
-        db_session.delete(screen)
-        db_session.commit()
-        db_session.close()
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
-        db_session.rollback()
-

@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
-from .main import *
-from .models import *
-from .database import *
+from ..models import Screen
+from ..database import session
+
+router = APIRouter()
 
 # Get the screen name for a given screen ID
 def get_screen_name(screen_id: int):
@@ -33,7 +34,7 @@ def get_average_screen_time_per_session(screen_id: int):
         return 0
 
 # Get screen statistics for a given screen ID
-@app.get("/screenTimeStatistics/{screen_id}", response_model=None)
+@router.get("/screenTimeStatistics/{screen_id}", response_model=None)
 def get_screen_time_statistics(screen_id: int) -> JSONResponse:
     try:
         screen_name = get_screen_name(screen_id)

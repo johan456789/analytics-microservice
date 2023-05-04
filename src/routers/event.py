@@ -1,10 +1,10 @@
-from pydantic import BaseModel
 import traceback
-from .main import *
-from .session import is_valid_datetime
-from .schemas import *
-from .database import create_db_session
-from .models import *
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
+from ..schemas import RecordEventItem
+from ..models import Event, Session
+from utils.utils import is_valid_datetime
+from ..database import create_db_session
 
 """
 File description:
@@ -27,10 +27,10 @@ return_response_200 = {
 }
 
 
-app = FastAPI()
+router = APIRouter()
 
 
-@app.post("/api/analysis/record-event/")
+@router.post("/api/analysis/record-event/")
 async def record_event(item:RecordEventItem):
     """
     Use it to store an event into the database
@@ -73,16 +73,4 @@ def userSessionExists(targetSessionID):
     """
     result = db_session.query(Session).filter(Session.sessionID==targetSessionID)
     return len(result.all())==1
-
-
-def deleteEvent(target_event_ID):
-    try:
-        event = db_session.query(Event).filter_by(eventID=target_event_ID).first()
-        db_session.delete(event)
-        db_session.commit()
-        db_session.close()
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
-        db_session.rollback()
 
