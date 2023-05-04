@@ -4,8 +4,11 @@ from .database import create_db_session
 from .models import *
 from .schemas import *
 import traceback
-Base = declarative_base()
 
+"""
+File description:
+This is the file that contains the POST endpoints related to session
+"""
 
 """
 What it is:
@@ -188,12 +191,12 @@ def is_valid_datetime(datetime_str):
         return False
 
 
-def delete_session_from_database(sessionID):
+def delete_session_from_database(session_ID):
     """
     Use it to delete a session row in the database whose session id matches the given sessionID
     """
     try:
-        target_session = db_session.query(Session).filter_by(sessionID=sessionID).first()
+        target_session = db_session.query(Session).filter_by(sessionID=session_ID).first()
         db_session.delete(target_session)
         db_session.commit()
         db_session.close()
