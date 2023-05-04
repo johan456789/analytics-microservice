@@ -65,7 +65,9 @@ By default, it runs on http://127.0.0.1:8000 and you will see the response:
 ```
 
 ### Run tests
-NOTE: The tests we wrote will only work when the database connection string is the one that connects to our test database. If the database connection string you enter in the .env is not our test database, some of our test won't pass. 
+NOTE: 
+1. The tests we wrote will only work when the database connection string is the one that connects to our test database. If the database connection string you enter in the .env is not our test database, some of our test won't pass. 
+2. You don't need to run the app to run the pytest
 #### All tests
 
 ```shell
