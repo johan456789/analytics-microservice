@@ -38,6 +38,40 @@ screen_return_response_200 = {
 
 router = APIRouter()
 
+@router.post("/screen/record_start")
+async def set_current_screen(item:RecordScreenItem):
+    """
+    Use it to add a screen into the screen database. The screen has the information contained in the RecordScreenItem
+    item.
+    :param item: The RecordScreenItem. Hover and click it to see its data structure
+    :return: 200, 400, or 500 HTTPResponse
+    """
+    try:
+        if item.sessionID is None or item.sessionID == "":
+            return JSONResponse(status_code=400,content=screen_return_response_400["missing_sessionID"])
+        if item.screenName is None or item.screenName == "":
+            return JSONResponse(status_code=400,content=screen_return_response_400["missing_screenName"])
+        if item.startTime is None or item.startTime == "":
+            return JSONResponse(status_code=400,content=screen_return_response_400["missing_startTime"])
+        if not is_valid_datetime(item.startTime):
+            return JSONResponse(status_code=400,content=screen_return_response_400["invalid_datetime"])
+        else:
+            if not userSessionExists(item.sessionID):
+                return JSONResponse(status_code=400,content=screen_return_response_400["session_not_exists"])
+            else:
+                recorded_screen = Screen(sessionID=item.sessionID,screenName=item.screenName, startTime=item.startTime)
+                session.add(recorded_screen)
+                session.flush()
+                session.commit()
+                session.refresh(recorded_screen)
+                data = screen_return_response_200["recorded_screen"]
+                data["screenID"] = recorded_screen.screenID
+                return JSONResponse(status_code=200, content=data)
+    except Exception as e:
+        traceback.print_exc()
+        session.rollback()
+        raise HTTPException(status_code=500, detail={"status_code":500, "message":str(e)})
+
 @router.post("/screen/record_end")
 async def close_current_screen(item:CloseScreenItem):
     """
@@ -108,38 +142,3 @@ def checkCloseScreenRow(item: CloseScreenItem):
         return "endTime conflicts startTime"
     if result.endTime is not None:
         return "endTime is not null"
-
-
-@router.post("/screen/record_start")
-async def set_current_screen(item:RecordScreenItem):
-    """
-    Use it to add a screen into the screen database. The screen has the information contained in the RecordScreenItem
-    item.
-    :param item: The RecordScreenItem. Hover and click it to see its data structure
-    :return: 200, 400, or 500 HTTPResponse
-    """
-    try:
-        if item.sessionID is None or item.sessionID == "":
-            return JSONResponse(status_code=400,content=screen_return_response_400["missing_sessionID"])
-        if item.screenName is None or item.screenName == "":
-            return JSONResponse(status_code=400,content=screen_return_response_400["missing_screenName"])
-        if item.startTime is None or item.startTime == "":
-            return JSONResponse(status_code=400,content=screen_return_response_400["missing_startTime"])
-        if not is_valid_datetime(item.startTime):
-            return JSONResponse(status_code=400,content=screen_return_response_400["invalid_datetime"])
-        else:
-            if not userSessionExists(item.sessionID):
-                return JSONResponse(status_code=400,content=screen_return_response_400["session_not_exists"])
-            else:
-                recorded_screen = Screen(sessionID=item.sessionID,screenName=item.screenName, startTime=item.startTime)
-                session.add(recorded_screen)
-                session.flush()
-                session.commit()
-                session.refresh(recorded_screen)
-                data = screen_return_response_200["recorded_screen"]
-                data["screenID"] = recorded_screen.screenID
-                return JSONResponse(status_code=200, content=data)
-    except Exception as e:
-        traceback.print_exc()
-        session.rollback()
-        raise HTTPException(status_code=500, detail={"status_code":500, "message":str(e)})
