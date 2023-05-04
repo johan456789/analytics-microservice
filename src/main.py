@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from .models import *
 from .routers.users import router as user_router
 from .routers.sessions import router as session_router
+from .routers.user_screen_time import router as user_screen_time_router
+from .routers.screen_time_stats import router as screen_time_stats_router
+from .routers.avg_engmt_time import router as avg_engmt_time_router
 
 app = FastAPI(
     docs_url="/api/v2/docs",
@@ -13,6 +16,9 @@ app = FastAPI(
 )
 app.include_router(user_router)
 app.include_router(session_router)
+app.include_router(user_screen_time_router)
+app.include_router(screen_time_stats_router)
+app.include_router(avg_engmt_time_router)
 
 @app.get('/')
 async def root():
