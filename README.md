@@ -5,7 +5,7 @@ This project is to build APIs for BU SAIL's analytical microservice. Due to priv
 
 ## Technical architecture and explanation
 <img width="705" alt="Screenshot 2023-05-04 at 5 12 40 PM" src="https://user-images.githubusercontent.com/36748450/236333635-cd2c5002-2f09-4cce-a564-91132b1fef0c.png">   
-Explanation:  
+Explanation:   <br>     
 The application is a FastAPI that contains the APIs we wrote. The FastAPI is treated as a microservice and ran using uvicorn. The FastAPI’s endpoints will store and retrieve data from a MySQL database by using an ORM called SQLAlchemy. Clients use our application’s APIs by sending HTTP Request.
 
 
