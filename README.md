@@ -1,5 +1,20 @@
 # analytics-microservice
 
+### brief overview of the project:
+
+### technical architecture and explanation
+
+### Detailed instructions on how to run our project:
+
+
+### Issues of current project:
+
+
+### Deployment:
+
+###
+
+
 ## Setup
 
 ### Install prerequisites
@@ -7,7 +22,6 @@
 ```shell
 pip install -r requirements.txt
 ```
-
 ### Set environment variables
 
 Create a .env file in the root directory and add the following variables:
