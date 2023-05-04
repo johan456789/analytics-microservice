@@ -30,7 +30,7 @@ return_response_200 = {
 router = APIRouter()
 
 
-@router.post("/api/analysis/record-event/")
+@router.post("/event/record")
 async def record_event(item:RecordEventItem):
     """
     Use it to store an event into the database

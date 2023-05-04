@@ -48,7 +48,7 @@ return_response_200 = {
 router = APIRouter()
 
 
-@router.post("/api/analysis/record-session-start-time/")
+@router.post("/session/record_start")
 async def record_session_start_time(item:RecordSessionItem):
     '''
     Use this endpoint to store a session into the database
@@ -81,7 +81,7 @@ async def record_session_start_time(item:RecordSessionItem):
 
 
 
-@router.post("/api/analysis/update-session-end-time/")
+@router.post("/session/record_end")
 async def update_session_end_time(item:EndTimeItem):
     '''
     Use this endpoint to update the end time of a session into the database
