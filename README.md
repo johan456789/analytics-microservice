@@ -36,7 +36,7 @@ deactivate
 rm -rf ~/env
 ```
 
-
+### NOTE: Do all the following step in the virtual environment you just installed above.
 ### Install prerequisites
 
 ```shell
