@@ -28,7 +28,7 @@ def test_add_event_successfully():
                            "startTime": "2023-04-19 12:30:45"
                            }
 
-        session_response = client.post("/api/analysis/record-session-start-time/", json=session_payload)
+        session_response = client.post("/session/record_start", json=session_payload)
         assert session_response.status_code == 200
         add_session_response = json.loads(session_response.content.decode('utf-8'))
         assert add_session_response['status code'] == 200
@@ -64,7 +64,7 @@ def test_missing_sessionID():
                            "sessionID": str(new_session_id),
                            "startTime": "2023-04-19 12:30:45"
                            }
-        session_response = client.post("/api/analysis/record-session-start-time/", json=session_payload)
+        session_response = client.post("/session/record_start", json=session_payload)
         assert session_response.status_code == 200
 
         #add event that is based on this session
@@ -93,7 +93,7 @@ def test_missing_eventName():
                            "sessionID": str(new_session_id),
                            "startTime": "2023-04-19 12:30:45"
                            }
-        session_response = client.post("/api/analysis/record-session-start-time/", json=session_payload)
+        session_response = client.post("/session/record_start", json=session_payload)
         assert session_response.status_code == 200
 
         #add event that is based on this session
@@ -121,7 +121,7 @@ def test_missing_occurTime():
                            "sessionID": str(new_session_id),
                            "startTime": "2023-04-19 12:30:45"
                            }
-        session_response = client.post("/api/analysis/record-session-start-time/", json=session_payload)
+        session_response = client.post("/session/record_start", json=session_payload)
         assert session_response.status_code == 200
 
         #add event that is based on this session
@@ -171,7 +171,7 @@ def test_invalid_time():
                            "sessionID": str(new_session_id),
                            "startTime": "2023-04-19 12:30:45"
                            }
-        session_response = client.post("/api/analysis/record-session-start-time/", json=session_payload)
+        session_response = client.post("/session/record_start", json=session_payload)
         assert session_response.status_code == 200
 
         #add event that is based on this session
