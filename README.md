@@ -11,6 +11,12 @@ The application is a FastAPI that contains the APIs we wrote. The FastAPI is tre
 
 ## Detailed instructions on how to run our project
 
+### Git clone the repository and go into the root folder:
+```shell
+git clone https://github.com/hicsail/analytics-microservice.git
+cd analytics-microservice
+```
+
 ### Install virtual requirement
 1. create a python environment named env  
 ```shell
@@ -30,7 +36,6 @@ deactivate
 rm -rf ~/env
 ```
 
-### NOTE: Do all the following step in the virtual environment you just installed above.
 ### Install prerequisites
 
 ```shell
@@ -41,7 +46,7 @@ pip install -r requirements.txt
 Create a .env file in the root directory and add the following variables:
 
 ```shell
-DB_CONNECTION_STRING=mysql+pymysql://username:password@hostname:port/database_name
+echo "DB_CONNECTION_STRING=mysql+pymysql://username:password@hostname:port/database_name" >> .env
 ```
 
 ### Run the app
@@ -59,7 +64,7 @@ By default, it runs on http://127.0.0.1:8000 and you will see the response:
 ```
 
 ### Run tests
-
+NOTE: The tests we wrote will only work when the database connection string is the one that connects to our test database. If the database connection string you enter in the .env is not our test database, some of our test won't pass. 
 #### All tests
 
 ```shell
@@ -71,12 +76,22 @@ pytest
 ```shell
 pytest -k <test_file_or_function>
 ```
-For example, `pytest -k test_main`
+For example, `pytest -k test_users`
+
+
+### Get the swagger openapi document:
+1. Run the app first:
+```shell
+uvicorn src.main:app --reload
+```
+
+2. If your app runs on local host and port 8000, then you can access the SWAGGER document here:  <br>
+http://127.0.0.1:8000/api/v2/docs
 
 
 ## Issues of current project
 1. (session.py)"delete_session_from_database" function shows mapping error https://github.com/hicsail/analytics-microservice/issues/22
-3. add database connection string to GitHub Secrets for CI https://github.com/hicsail/analytics-microservice/issues/15
+2. add database connection string to GitHub Secrets for CI https://github.com/hicsail/analytics-microservice/issues/15
 
 
 ## Deployment
