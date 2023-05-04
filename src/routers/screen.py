@@ -38,7 +38,7 @@ screen_return_response_200 = {
 
 router = APIRouter()
 
-@router.post("/api/analysis/update-current-screen-endTime/")
+@router.post("/screen/record_end")
 async def close_current_screen(item:CloseScreenItem):
     """
     Use it to set the close time of the screen. When a user closes a screen, the app can call this API to record the time
@@ -110,7 +110,7 @@ def checkCloseScreenRow(item: CloseScreenItem):
         return "endTime is not null"
 
 
-@router.post("/api/analysis/setCurrentScreen/")
+@router.post("/screen/record_start")
 async def set_current_screen(item:RecordScreenItem):
     """
     Use it to add a screen into the screen database. The screen has the information contained in the RecordScreenItem

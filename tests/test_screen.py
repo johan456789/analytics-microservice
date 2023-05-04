@@ -27,7 +27,7 @@ def test_add_screen_to_database_successfully():
             "screenName": "personal page",
             "startTime": "2023-05-02 12:30:45"
         }
-        add_event_response = client.post("/api/analysis/setCurrentScreen/", json=screen_payload)
+        add_event_response = client.post("/screen/record_start", json=screen_payload)
         assert add_event_response.status_code == 200
         add_event_response = json.loads(add_event_response.content.decode('utf-8'))
         assert add_event_response['status code'] == 200
@@ -46,7 +46,7 @@ def test_update_screen_close_time_in_database_successfully():
             "screenName": "personal page",
             "startTime": "2023-05-02 12:30:45"
         }
-        add_event_response = client.post("/api/analysis/setCurrentScreen/", json=screen_payload)
+        add_event_response = client.post("/screen/record_start", json=screen_payload)
         assert add_event_response.status_code == 200
         add_event_response = json.loads(add_event_response.content.decode('utf-8'))
         assert add_event_response['message'] == "Set current screen successfully"
@@ -59,7 +59,7 @@ def test_update_screen_close_time_in_database_successfully():
             "screenName": "personal page",
             "endTime": "2023-05-02 13:30:45"
         }
-        close_event_response = client.post("/api/analysis/update-current-screen-endTime/", json=close_screen_payload)
+        close_event_response = client.post("/screen/record_end", json=close_screen_payload)
         assert close_event_response.status_code == 200
         decoded_close_event_response = json.loads(close_event_response.content.decode('utf-8'))
         assert decoded_close_event_response['message'] == "Set screen endTime successfully"
@@ -77,7 +77,7 @@ def test_add_screen_with_endTime_to_database_successfully():
             "startTime": "2023-05-02 12:30:45",
             "endTime": "2023-05-02 13:30:45"
         }
-        add_event_response = client.post("/api/analysis/setCurrentScreen/", json=screen_payload)
+        add_event_response = client.post("/screen/record_start", json=screen_payload)
         assert add_event_response.status_code == 200
         add_event_response = json.loads(add_event_response.content.decode('utf-8'))
         assert add_event_response['status code'] == 200
