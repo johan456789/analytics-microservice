@@ -88,7 +88,3 @@ def test_add_screen_with_endTime_to_database_successfully():
     except Exception as err:
         traceback.print_exc()
         assert False
-
-
-
-
