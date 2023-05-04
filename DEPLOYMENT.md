@@ -13,9 +13,9 @@ docker-compose.yml: https://github.com/hicsail/analytics-microservice/blob/main/
 ## Steps:
 On Mac:
 1. Make sure you have installed docker locally. You can do this by running the following command in a terminal
-```shell
-docker --version
-```
+ ```shell
+ docker --version
+ ```
 2. Install Docker Desktop
 3. After installing Docker locally, you need to make sure you Docker daemon is running. You can do this by running the command: 
 ```shell
