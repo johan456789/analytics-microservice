@@ -5,9 +5,7 @@ from typing import List
 from models import *
 from database import session
 
-
 app = FastAPI()
-
 
 @app.get('/')
 async def root():
