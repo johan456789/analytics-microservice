@@ -5,6 +5,9 @@ from datetime import datetime, timedelta
 from .main import *
 from .models import *
 from .database import *
+from typing import List
+from models import *
+from database import session
 
 @app.get("/daily_active_users/{date}")
 def get_daily_active_users(date: datetime) -> List[str]:
