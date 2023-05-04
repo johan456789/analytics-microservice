@@ -8,6 +8,29 @@ from utils.utils import delete_user_from_database
 
 client = TestClient(app)
 
+def test_root():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert isinstance(response.json(), dict)
+
+def test_get_daily_active_users():
+    # TODO: get empty database, add user, and test existence of user
+    response = client.get("/daily_active_users/2021-01-01T00:00:00")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
+def test_get_weekly_new_users():
+    # TODO: get empty database, add user, and test existence of user
+    response = client.get("/weekly_new_users/2021-01-01T00:00:00")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
+def test_get_monthly_active_users():
+    # TODO: get empty database, add user, and test existence of user
+    response = client.get("/monthly_active_users/2021-01-01T00:00:00")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
 def test_add_user_successfully():
     id = uuid.uuid4()
     payload = {"userID":str(id)}
@@ -17,7 +40,6 @@ def test_add_user_successfully():
     assert json_response['status code'] == 200
     assert json_response['message'] == "Added user successfully"
     delete_user_from_database(str(id))
-
 
 def test_add_duplicate_user():
     try:
@@ -32,12 +54,10 @@ def test_add_duplicate_user():
         print(e)
         assert False
 
-
 def test_missing_user_id_field():
     payload = {"userID": ""}
     response = client.post("/api/analysis/add-user/",json=payload)
     assert response.status_code == 411
-
 
 def test_add_user_userid_not_uuid():
     not_user_id = "not_uuid"
