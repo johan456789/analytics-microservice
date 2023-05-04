@@ -12,17 +12,36 @@ docker-compose.yml: https://github.com/hicsail/analytics-microservice/blob/main/
 
 ## Steps:
 On Mac:
-1. Make sure you have installed docker locally. You can do this by running this command “docker --version” in a terminal
+1. Make sure you have installed docker locally. You can do this by running the following command in a terminal
+```shell
+docker --version
+```
 2. Install Docker Desktop
 3. After installing Docker locally, you need to make sure you Docker daemon is running. You can do this by running the command: 
-“brew services list | grep docker”
-4. If Docker is not running, start it with the command “brew services start docker” on Mac.
+```shell
+brew services list | grep docker
+```
+4. If Docker is not running, start it with the following command on Mac.  
+```shell
+brew services start docker
+```
 5. Start the Docker Desktop
-6. Get the application repository by running: "Git clone https://github.com/hicsail/analytics-microservice.git "
-7. Go to the root of the analytics-microservice repo by entering: "cd analytics-microservice"
-8. Run "docker build ./" to build a docker image
-9. Run "docker-compose up". This will run the application in Docker
-
+6. Get the application repository by running:  
+```shell
+Git clone https://github.com/hicsail/analytics-microservice.git
+```
+7. Go to the root of the analytics-microservice repo by entering:  
+```shell
+cd analytics-microservice
+```
+8. Run the following command to build a docker image
+```shell
+docker build ./
+```
+9. Run the following command to run the application in Docker
+```shell
+docker-compose up
+```
 
 
 ## Issues:
