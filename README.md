@@ -17,7 +17,26 @@ https://github.com/hicsail/analytics-microservice/blob/main/DEPLOYMENT.md
 
 ### Detailed instructions on how to run our project:
 
-### HIGHLY recommand create a virtual environment first!
+### Install virtual requirement:
+1. create a python environment named env  
+```shell
+python3 -m venv env
+```
+2. Activate the virtual environment by running the following command:
+```shell
+source env/bin/activate
+```
+3. Now you will use this environment to install the prerequisites of this application and run this application.
+4. Deactivate the virtual environment after you are done by running the folloing command:
+```shell
+deactivate
+```
+5. (Optional) If you want to delete the virtual environment you installed, run the follwing command:
+```shell
+rm -rf ~/env
+```
+
+
 ### Install prerequisites
 
 ```shell
