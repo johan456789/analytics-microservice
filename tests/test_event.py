@@ -19,7 +19,7 @@ def test_add_event_successfully():
     new_session_id = uuid.uuid4()
     try:
         payload = {"userID": str(new_user_id)}
-        response = client.post("/api/analysis/add-user/", json=payload)
+        response = client.post("/users/add", json=payload)
         add_user_response = json.loads(response.content.decode('utf-8'))
         assert add_user_response['status code'] == 200
         assert add_user_response['message'] == "Added user successfully"
@@ -58,7 +58,7 @@ def test_missing_sessionID():
     new_session_id = uuid.uuid4()
     try:
         payload = {"userID": str(new_user_id)}
-        response = client.post("/api/analysis/add-user/", json=payload)
+        response = client.post("/users/add", json=payload)
         assert response.status_code == 200
         session_payload = {"userID": str(new_session_id),
                            "sessionID": str(new_session_id),
@@ -87,7 +87,7 @@ def test_missing_eventName():
     new_session_id = uuid.uuid4()
     try:
         payload = {"userID": str(new_user_id)}
-        response = client.post("/api/analysis/add-user/", json=payload)
+        response = client.post("/users/add", json=payload)
         assert response.status_code == 200
         session_payload = {"userID": str(new_session_id),
                            "sessionID": str(new_session_id),
@@ -115,7 +115,7 @@ def test_missing_occurTime():
     new_session_id = uuid.uuid4()
     try:
         payload = {"userID": str(new_user_id)}
-        response = client.post("/api/analysis/add-user/", json=payload)
+        response = client.post("/users/add", json=payload)
         assert response.status_code == 200
         session_payload = {"userID": str(new_session_id),
                            "sessionID": str(new_session_id),
@@ -142,7 +142,7 @@ def test_invalid_sessionID():
     new_user_id = uuid.uuid4()
     try:
         payload = {"userID": str(new_user_id)}
-        response = client.post("/api/analysis/add-user/", json=payload)
+        response = client.post("/users/add", json=payload)
         assert response.status_code == 200
 
         #add event that is based on this session
@@ -165,7 +165,7 @@ def test_invalid_time():
     new_session_id = uuid.uuid4()
     try:
         payload = {"userID": str(new_user_id)}
-        response = client.post("/api/analysis/add-user/", json=payload)
+        response = client.post("/users/add", json=payload)
         assert response.status_code == 200
         session_payload = {"userID": str(new_session_id),
                            "sessionID": str(new_session_id),

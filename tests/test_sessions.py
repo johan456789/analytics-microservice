@@ -30,7 +30,7 @@ def test_add_session_successfully():
     new_session_id = uuid.uuid4()
     try:
         payload = {"userID":str(new_user_id)}
-        response = client.post("/api/analysis/add-user/",json=payload)
+        response = client.post("/users/add",json=payload)
         add_user_response = json.loads(response.content.decode('utf-8'))
         assert add_user_response['status code'] == 200
         assert add_user_response['message'] == "Added user successfully"
@@ -54,7 +54,7 @@ def test_insert_test_duplicated_session():
     new_session_id = uuid.uuid4()
     try:
         payload = {"userID":str(new_user_id)}
-        response = client.post("/api/analysis/add-user/",json=payload)
+        response = client.post("/users/add",json=payload)
         add_user_response = json.loads(response.content.decode('utf-8'))
         assert add_user_response['status code'] == 200
         assert add_user_response['message'] == "Added user successfully"
@@ -84,7 +84,7 @@ def test_add_session_with_endTime_successfully():
     new_session_id = uuid.uuid4()
     try:
         payload = {"userID":str(new_user_id)}
-        response = client.post("/api/analysis/add-user/",json=payload)
+        response = client.post("/users/add",json=payload)
         add_user_response = json.loads(response.content.decode('utf-8'))
         assert add_user_response['status code'] == 200
         assert add_user_response['message'] == "Added user successfully"
@@ -107,7 +107,7 @@ def test_update_session_end_time_successfully():
     new_session_id = uuid.uuid4()
     try:
         payload = {"userID":str(new_user_id)}
-        response = client.post("/api/analysis/add-user/",json=payload)
+        response = client.post("/users/add",json=payload)
         add_user_response = json.loads(response.content.decode('utf-8'))
         assert add_user_response['status code'] == 200
         assert add_user_response['message'] == "Added user successfully"
