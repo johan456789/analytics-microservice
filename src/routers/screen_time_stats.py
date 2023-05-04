@@ -34,7 +34,7 @@ def get_average_screen_time_per_session(screen_id: int):
         return 0
 
 # Get screen statistics for a given screen ID
-@router.get("/screenTimeStatistics/{screen_id}", response_model=None)
+@router.get("/screen_time/{screen_id}", response_model=None)
 def get_screen_time_statistics(screen_id: int) -> JSONResponse:
     try:
         screen_name = get_screen_name(screen_id)

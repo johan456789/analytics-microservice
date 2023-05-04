@@ -6,7 +6,7 @@ from ..database import session
 
 router = APIRouter()
 
-@router.get("/userScreenTime/{user_id}/{screen_id}", response_model=None)
+@router.get("/screen_time/{user_id}/{screen_id}", response_model=None)
 def get_user_screen_time(user_id: str, screen_id: int) -> JSONResponse:
     try:
         # Get all sessions for the given user

@@ -5,7 +5,7 @@ client = TestClient(app)
 
 def test_screen_time_stats():
     screen_id = 18
-    response = client.get(f"/screenTimeStatistics/{screen_id}")
+    response = client.get(f"/screen_time/{screen_id}")
     assert response.status_code == 200
     assert response.json() == {"screen_id": 18, "screen_name": "SCR00221", "total_screen_time(sec)": 60.0,
                                 "average_screen_time_per_session(sec)": 60.0}
